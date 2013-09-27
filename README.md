@@ -51,4 +51,4 @@ you would like to be removed from minted identifiers before returning them.
 
 ---
 
-See LICENSE.txt for terms.
+See LICENSE for terms.
