@@ -3,6 +3,37 @@ require 'uri'
 require 'yaml'
 
 module MintyRb
+  class Binder
+    def initialize file
+      @scope ||= "default"
+      @config = YAML.load_file(file)[@scope]
+    end
+
+    def bind identifier, options
+      options.each_pair do |key, value|
+        run identifier, key.to_s, value
+      end
+    end
+
+    private
+
+    def run identifier, key, value
+      http = Net::HTTP.new(@config['host'], @config['port'])
+      http.use_ssl = @config['use_ssl']
+      request = Net::HTTP::Put.new [
+        @config['path'],
+        URI.escape(identifier),
+        URI.escape(key),
+        URI.escape(value),
+      ].join('/')
+      response = http.request(request)
+
+      if response.code == "200"
+        response.body
+      end
+    end
+  end
+
   class Minter
     def initialize file
       @scope ||= "default"
